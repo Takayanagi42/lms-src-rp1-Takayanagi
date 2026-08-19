@@ -1,6 +1,7 @@
 package jp.co.sss.lms.service;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +16,7 @@ import jp.co.sss.lms.entity.TStudentAttendance;
 import jp.co.sss.lms.enums.AttendanceStatusEnum;
 import jp.co.sss.lms.form.AttendanceForm;
 import jp.co.sss.lms.form.DailyAttendanceForm;
+import jp.co.sss.lms.mapper.MLmsUserMapper;
 import jp.co.sss.lms.mapper.TStudentAttendanceMapper;
 import jp.co.sss.lms.util.AttendanceUtil;
 import jp.co.sss.lms.util.Constants;
@@ -43,7 +45,26 @@ public class StudentAttendanceService {
 	private LoginUserDto loginUserDto;
 	@Autowired
 	private TStudentAttendanceMapper tStudentAttendanceMapper;
-
+	
+//	新規実装
+	@Autowired
+	private TrainingTime trainingTime;
+	@Autowired
+	private MLmsUserMapper mLmsUserMapper;
+//	@Autowired
+//	private MPlaceMapper mPlaceMapper;
+//	@Autowired
+//	private TCompanyAttendanceMapper tCompanyAttendanceMapper;
+//	@Autowired
+//	private TUserPlaceMapper tUserPlaceMapper;
+//	@Autowired
+//	private PlaceService placeService;
+	@Autowired
+	private CourseService courseService;
+//	@Autowired
+//	private CompanyService companyService;
+	
+	
 	/**
 	 * 勤怠一覧情報取得
 	 * 
@@ -71,6 +92,26 @@ public class StudentAttendanceService {
 		}
 
 		return attendanceManagementDtoList;
+	}
+	
+	public boolean checkPastUninput() {
+		// SimpleDateFormatでフォーマット設定
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+		// 現在日付取得
+		Date trainingDate = new Date();
+		// 過去日の未入力件数を取得
+		int count = tStudentAttendanceMapper.notEnterCount(
+				loginUserDto.getLmsUserId(),
+				Constants.DB_FLG_FALSE,
+				trainingDate
+		);
+		
+		// 件数チェック
+		if (count >0) {
+			return true;
+		}
+		//それ以外はfalse
+		return false;
 	}
 
 	/**

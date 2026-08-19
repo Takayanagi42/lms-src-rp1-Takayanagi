@@ -47,8 +47,16 @@ public class AttendanceController {
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
 
+		
+//		過去日の未入力チェック
+		boolean hasPastUninput = studentAttendanceService.checkPastUninput();
+		model.addAttribute("hasPastUninput", hasPastUninput);
+		
+		
 		return "attendance/detail";
 	}
+	
+	
 
 	/**
 	 * 勤怠管理画面 『出勤』ボタン押下
